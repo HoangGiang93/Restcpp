@@ -6,7 +6,7 @@
 
 **Compile:**
 1) Open Terminal
-2) g++ restcpp.cpp -lcurl -lcurlcpp -ljsoncpp -o restcpp
+2) g++ REST_cpp.cpp -o REST_cpp -lcurl -lcurlpp -ljsoncpp 
 
 **Run:**
-1) ./restcpp 
+1) ./REST_cpp 
