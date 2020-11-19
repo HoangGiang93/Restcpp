@@ -6,7 +6,7 @@
 
 **Compile:**
 1) Open Terminal
-2) g++ Entity.cpp -o Entity -lcurl -lcurlpp -ljsoncpp 
+2) g++ Test.cpp -o Test -lcurl -lcurlpp -ljsoncpp 
 
 **Run:**
-1) ./Entity 
+1) ./Test 

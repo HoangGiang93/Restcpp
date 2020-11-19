@@ -15,14 +15,22 @@ protected:
   std::string name;
   curlpp::Easy request;
 
-  virtual bool import_entity()
+  virtual bool import_entity(const char* link = nullptr)
   {
-    std::ostringstream os;
-    os << this->request;
+    if (link)
+    {
+      this->request.setOpt<curlpp::options::Url>(link);
+    }
+    else
+    {
+      this->request.setOpt<curlpp::options::Url>(this->link.c_str());
+    }
+    std::stringstream ss;
+    ss << this->request;
 
     // Convert the string to json
     Json::Reader reader;
-    return reader.parse(os.str(), this->entity);
+    return reader.parse(ss.str(), this->entity);
   }
 
   virtual Json::Value get_entity() const
@@ -102,24 +110,8 @@ public:
 
 Entity::Entity(const char* link = nullptr) : link(link)
 {
-  try
-  {
-    // That's all that is needed to do cleanup of used resources (RAII style).
-    curlpp::Cleanup myCleanup;
-    this->request.setOpt<curlpp::options::Url>(link);
-    this->request.perform();
-  }
-
-  catch(curlpp::RuntimeError & e)
-  {
-    std::cout << e.what() << std::endl;
-    std::cout << "Is host name correct?" << std::endl;
-  }
-
-  catch(curlpp::LogicError & e)
-  {
-    std::cout << e.what() << std::endl;
-  }
+  curlpp::Cleanup myCleanup;
+  this->request.setOpt<curlpp::options::Url>(link);
 }
 
 Entity::~Entity()

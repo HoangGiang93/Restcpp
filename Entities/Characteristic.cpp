@@ -1,25 +1,18 @@
+#pragma once
+
 #include "Entity.cpp"
 
 class Characteristic : public Entity
 {
-private:
-  std::string characteristic_id;
-
 public:
   Characteristic(const char*);
-  void set_characteristic_id(const std::string &);
   Json::Value get_characteristic();
   bool set_characteristic(const std::string &);
   bool send_characteristic();
-  bool delete_characteristic();
+  bool delete_characteristic(const std::string &);
 };
 
-Characteristic::Characteristic(const char* link) : Entity::Entity(link) {}
-
-void Characteristic::set_characteristic_id(const std::string &characteristic_id)
-{
-  this->characteristic_id = characteristic_id;
-}
+Characteristic::Characteristic(const char* link) : Entity::Entity((std::string(link) + "characteristics/").c_str()) {}
 
 Json::Value Characteristic::get_characteristic()
 {
@@ -38,15 +31,15 @@ bool Characteristic::send_characteristic()
   return this->send_entity();
 }
 
-bool Characteristic::delete_characteristic()
+bool Characteristic::delete_characteristic(const std::string& characteristic_id)
 {
-  return this->delete_entity((std::string(this->link) + this->characteristic_id).c_str());
+  return this->delete_entity((this->link + characteristic_id).c_str());
 }
 
 class Characteristics : public Entity
 {
 private:
-  Characteristic characteristic;
+  Characteristic* characteristic;
 
 public:
   Characteristics(const char*);
@@ -57,7 +50,10 @@ public:
   bool delete_characteristic(const std::string &);
 };
 
-Characteristics::Characteristics(const char* link) : Entity::Entity(link), characteristic(link) {}
+Characteristics::Characteristics(const char* link) : Entity::Entity((std::string(link) + "characteristics/").c_str()) 
+{
+  this->characteristic = new Characteristic(link);
+}
 
 bool Characteristics::import_characteristics()
 {
@@ -66,7 +62,7 @@ bool Characteristics::import_characteristics()
 
 bool Characteristics::set_characteristic(const std::string &characteristic_name)
 {
-  return this->characteristic.set_characteristic(characteristic_name);
+  return this->characteristic->set_characteristic(characteristic_name);
 }
 
 Json::Value Characteristics::get_characteristics()
@@ -76,11 +72,10 @@ Json::Value Characteristics::get_characteristics()
 
 bool Characteristics::send_characteristic()
 {
-  return this->characteristic.send_characteristic();
+  return this->characteristic->send_characteristic();
 }
 
 bool Characteristics::delete_characteristic(const std::string &characteristic_id)
 {
-  this->characteristic.set_characteristic_id(characteristic_id);
-  return this->characteristic.delete_characteristic();
+  return this->characteristic->delete_characteristic(characteristic_id);
 }
