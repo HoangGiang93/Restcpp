@@ -20,7 +20,7 @@ CustomerController::CustomerController(const char* link) : EntityController::Ent
 
 Json::Value CustomerController::get_customer(const std::string& customer_id)
 {
-  return this->get_entity((this->entity->link + customer_id).c_str());
+  return this->get_entity(customer_id);
 }
 
 bool CustomerController::post_customer(const std::string& customer_name)
@@ -32,10 +32,10 @@ bool CustomerController::post_customer(const std::string& customer_name)
 
 bool CustomerController::delete_customer(const std::string& customer_id)
 {
-  return this->delete_entity((this->entity->link + customer_id).c_str());
+  return this->delete_entity(customer_id);
 }
 
 Json::Value CustomerController::get_customers()
 {
-  return this->get_entities();
+  return this->get_entity();
 }

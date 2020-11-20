@@ -20,7 +20,7 @@ CharacteristicController::CharacteristicController(const char* link) : EntityCon
 
 Json::Value CharacteristicController::get_characteristic(const std::string &characteristic_id)
 {
-  return this->get_entity((this->entity->link + characteristic_id).c_str());
+  return this->get_entity(characteristic_id);
 }
 
 bool CharacteristicController::post_characteristic(const std::string &characteristic_name)
@@ -32,10 +32,10 @@ bool CharacteristicController::post_characteristic(const std::string &characteri
 
 bool CharacteristicController::delete_characteristic(const std::string &characteristic_id)
 {
-  return this->delete_entity((this->entity->link + characteristic_id).c_str());
+  return this->delete_entity(characteristic_id);
 }
 
 Json::Value CharacteristicController::get_characteristics()
 {
-  return this->get_entities();
+  return this->get_entity();
 }

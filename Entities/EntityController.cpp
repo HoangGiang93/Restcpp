@@ -9,20 +9,15 @@
 
 class Entity
 {
-public:
+private:
   std::string link;
-
-  virtual Json::Value get_data(const char* link = nullptr)
+  
+public:
+  virtual Json::Value get_data(std::string link_tail = "")
   {
     curlpp::Easy request;
-    if (link)
-    {
-      request.setOpt<curlpp::options::Url>(link);
-    }
-    else
-    {
-      request.setOpt<curlpp::options::Url>(this->link.c_str());
-    }
+    request.setOpt<curlpp::options::Url>((this->link + link_tail).c_str());
+
     std::stringstream ss;
     ss << request;
     request.perform();
@@ -33,19 +28,13 @@ public:
     return this->data;
   }
 
-  virtual bool post_data(const char* link = nullptr)
+  virtual bool post_data(std::string link_tail = "")
   {
     curlpp::Easy request;
     try
     {
-      if (link)
-      {
-        request.setOpt<curlpp::options::Url>(link);
-      }
-      else
-      {
-        request.setOpt<curlpp::options::Url>(this->link.c_str());
-      }
+      request.setOpt<curlpp::options::Url>((this->link + link_tail).c_str());
+
       std::list<std::string> header;
       header.push_back("Content-Type: application/json");
       request.setOpt(new curlpp::options::HttpHeader(header));
@@ -65,19 +54,12 @@ public:
     }
   }
 
-  virtual bool delete_data(const char* link = nullptr)
+  virtual bool delete_data(std::string link_tail = "")
   {
     curlpp::Easy request;
     try
     {
-      if (link)
-      {
-        request.setOpt<curlpp::options::Url>(link);
-      }
-      else
-      {
-        request.setOpt<curlpp::options::Url>(this->link.c_str());
-      }
+      request.setOpt<curlpp::options::Url>((this->link + link_tail).c_str());
       request.setOpt(new curlpp::options::CustomRequest{"DELETE"});
       request.perform();
     }
@@ -100,45 +82,25 @@ public:
   ~Entity() {}
 };
 
-class EntityController
+class EntityController : public Entity
 {
 protected:
-  Entity* entity;
-  Entity* entities;
-
-protected:
-  virtual Json::Value get_entity(const char* link = nullptr)
+  virtual Json::Value get_entity(std::string link_tail = "")
   {
-    return entity->get_data(link);
+    return this->get_data(link_tail);
   }
 
-  virtual bool post_entity(const Json::Value& data, const char* link = nullptr)
+  virtual bool post_entity(const Json::Value& data, std::string link_tail = "")
   {
-    this->entity->data = data;
-    return this->entity->post_data(link);
+    this->data = data;
+    return this->post_data(link_tail);
   }
 
-  virtual bool delete_entity(const char* link = nullptr)
+  virtual bool delete_entity(std::string link_tail = "")
   {
-    return this->entity->delete_data(link);
+    return this->delete_data(link_tail);
   }
 
-  virtual Json::Value get_entities(const char* link = nullptr)
-  {
-    return entities->get_data(link);
-  }
-
-  virtual bool post_entities(const Json::Value& data, const char* link = nullptr)
-  {
-    this->entities->data = data;
-    return this->entities->post_data(link);
-  }
-
-  virtual bool delete_entities(const char* link = nullptr)
-  {
-    return this->entities->delete_data(link);
-  }
-
-  EntityController(const char* link) : entity(new Entity(link)), entities(new Entity(link)) {}
+  EntityController(const char* link) : Entity::Entity(link) {}
   ~EntityController() {}
 };
